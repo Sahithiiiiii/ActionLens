@@ -1,0 +1,25 @@
+# Dependencies and build output
+node_modules/
+dist/
+
+# Secrets: NEVER commit these (use .env.example as the template)
+.env
+.env.*
+!.env.example
+
+# Uploaded PDFs (keep the folder itself)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Generated Prisma client (recreated by: npm run db:generate)
+backend/src/generated/
+
+# Editor, OS and tool folders
+.vscode/
+.idea/
+.agents/
+.claude/
+.windsurf/
+.DS_Store
+*.log
+*.rdb

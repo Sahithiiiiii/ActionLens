@@ -1,0 +1,111 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DocumentStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+enum DeadlineStatus {
+  PENDING
+  COMPLETED
+  EXPIRED
+}
+
+model User {
+  id            String         @id @default(uuid()) @db.Uuid
+  name          String
+  email         String         @unique
+  passwordHash  String
+  timezone      String         @default("Asia/Kolkata")
+  emailVerifiedAt DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  documents     Document[]
+  notifications Notification[]
+  emailVerification EmailVerification?
+  passwordReset PasswordReset?
+}
+
+// One active verification code per user (re-sending replaces it).
+model EmailVerification {
+  userId     String   @id @db.Uuid
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  lastSentAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id            String         @id @default(uuid()) @db.Uuid
+  fileName      String
+  filePath      String
+  extractedText String?        @db.Text
+  status        DocumentStatus @default(PROCESSING)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  userId        String         @db.Uuid
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deadlines     Deadline[]
+}
+
+model Deadline {
+  id                    String         @id @default(uuid()) @db.Uuid
+  event                 String
+  date                  DateTime       @db.Date
+  time                  String?
+  timezone              String?
+  evidence              String         @db.Text
+  confidence            Float
+  createdAt             DateTime       @default(now())
+  documentId            String         @db.Uuid
+  document              Document       @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  status                DeadlineStatus @default(PENDING)
+  reminderLeadMinutes   Int            @default(120)
+  repeatIntervalMinutes Int            @default(30)
+  completedAt           DateTime?
+  nextReminderAt        DateTime?
+
+  notifications         Notification[]
+
+  @@index([date])
+  @@index([documentId])
+  @@index([status, nextReminderAt])
+}
+model Notification {
+  id         String    @id @default(uuid()) @db.Uuid
+  title      String
+  message    String    @db.Text
+  readAt     DateTime?
+  emailSentAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  userId     String    @db.Uuid
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  deadlineId String?   @db.Uuid
+  deadline   Deadline? @relation(fields: [deadlineId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([deadlineId])
+}
+// One active password-reset code per user.
+model PasswordReset {
+  userId     String   @id @db.Uuid
+  codeHash   String
+  expiresAt  DateTime
+  attempts   Int      @default(0)
+  lastSentAt DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
