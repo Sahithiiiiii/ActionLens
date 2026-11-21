@@ -33,9 +33,9 @@ COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma7.config.ts ./prisma7.config.ts
 COPY --from=build /app/src/generated ./src/generated
-
+COPY ecosystem.config.cjs ./ecosystem.config.cjs
 RUN mkdir -p /app/uploads
 
 EXPOSE 5000
 
-CMD ["node", "dist/server.js"]
+CMD ["./node_modules/.bin/pm2-runtime", "ecosystem.config.cjs"]
