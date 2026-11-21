@@ -28,6 +28,8 @@ npm run dev:all             # API + document, reminder and email workers
 Each piece also runs alone: `npm run dev`, `worker`, `reminder-worker`, `email-worker`.
 `npm test` runs the timezone unit tests.
 
+For hosted Redis (such as Render), set `REDIS_URL` on the API and every worker service to the provider's connection URL. `redis://` and TLS `rediss://` URLs are supported. `REDIS_URL` takes precedence over `REDIS_HOST`/`REDIS_PORT`, which default to `localhost:6379` for local development.
+
 ## API  (all but register/login need `Authorization: Bearer <token>`)
 
 | Method | Path | Purpose |

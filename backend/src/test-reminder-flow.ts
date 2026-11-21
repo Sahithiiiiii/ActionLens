@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { randomUUID } from "node:crypto";
 import { QueueEvents } from "bullmq";
+import { getRedisConnectionOptions } from "./config/redis-connection.js";
 import { prisma } from "./lib/prisma.js";
 import emailQueue from "./queues/email.queue.js";
 import reminderQueue from "./queues/reminder.queue.js";
@@ -12,10 +13,7 @@ if (!testEmail) {
   throw new Error("TEST_EMAIL is missing from .env");
 }
 
-const connection = {
-  host: process.env.REDIS_HOST || "localhost",
-  port: Number(process.env.REDIS_PORT) || 6379,
-};
+const connection = getRedisConnectionOptions();
 const reminderEvents = new QueueEvents("deadline-reminders", { connection });
 const emailEvents = new QueueEvents("email-delivery", { connection });
 const reminderCompletions = new Set<string>();

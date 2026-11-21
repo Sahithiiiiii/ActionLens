@@ -1,14 +1,12 @@
 import { Queue } from "bullmq";
 import type { DocumentJobData } from "./queue.types.js";
+import { getRedisConnectionOptions } from "../config/redis-connection.js";
 
 
 const documentQueue = new Queue<DocumentJobData>(
   "document-processing",
   {
-    connection: {
-      host: process.env.REDIS_HOST || "localhost",
-      port: Number(process.env.REDIS_PORT) || 6379,
-    },
+    connection: getRedisConnectionOptions(),
     defaultJobOptions: {
       attempts: 3,
       backoff: {

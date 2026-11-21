@@ -1,6 +1,7 @@
 
 import "dotenv/config";
 import { Worker } from "bullmq";
+import { getRedisConnectionOptions } from "../config/redis-connection.js";
 import type { Job } from "bullmq";
 import { prisma } from "../lib/prisma.js";
 import reminderQueue from "../queues/reminder.queue.js";
@@ -155,10 +156,7 @@ const worker = new Worker<ReminderJobData>(
     }
   },
   {
-    connection: {
-      host: process.env.REDIS_HOST || "localhost",
-      port: Number(process.env.REDIS_PORT) || 6379,
-    },
+    connection: getRedisConnectionOptions(),
   },
 );
 
@@ -188,10 +186,7 @@ const maintenanceWorker = new Worker(
     return result;
   },
   {
-    connection: {
-      host: process.env.REDIS_HOST || "localhost",
-      port: Number(process.env.REDIS_PORT) || 6379,
-    },
+    connection: getRedisConnectionOptions(),
   },
 );
 

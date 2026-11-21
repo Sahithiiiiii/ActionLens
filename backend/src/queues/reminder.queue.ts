@@ -1,11 +1,9 @@
 import "dotenv/config";
 import { Queue } from "bullmq";
+import { getRedisConnectionOptions } from "../config/redis-connection.js";
 
 const reminderQueue = new Queue("deadline-reminders", {
-  connection: {
-    host: process.env.REDIS_HOST || "localhost",
-    port: Number(process.env.REDIS_PORT) || 6379,
-  },
+  connection: getRedisConnectionOptions(),
 });
 
 export default reminderQueue;

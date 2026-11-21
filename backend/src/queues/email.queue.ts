@@ -1,12 +1,10 @@
 
 import "dotenv/config";
 import { Queue } from "bullmq";
+import { getRedisConnectionOptions } from "../config/redis-connection.js";
 
 const emailQueue = new Queue("email-delivery", {
-  connection: {
-    host: process.env.REDIS_HOST || "localhost",
-    port: Number(process.env.REDIS_PORT) || 6379,
-  },
+  connection: getRedisConnectionOptions(),
   defaultJobOptions: {
     attempts: 3,
     backoff: {

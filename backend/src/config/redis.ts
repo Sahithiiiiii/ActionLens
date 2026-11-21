@@ -1,12 +1,9 @@
 
 import Redis from "ioredis";
-const redisUrl = process.env.REDIS_URL;
+import { getRedisConnectionOptions } from "./redis-connection.js";
 
-if (!redisUrl) {
-  throw new Error("REDIS_URL is not configured");
-}
-
-const redis = new Redis(redisUrl, {
+const redis = new Redis({
+  ...getRedisConnectionOptions(),
   maxRetriesPerRequest: null,
 });
 

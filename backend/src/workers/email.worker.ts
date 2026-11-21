@@ -1,6 +1,7 @@
 
 import "dotenv/config";
 import { Worker } from "bullmq";
+import { getRedisConnectionOptions } from "../config/redis-connection.js";
 import { assertEmailConfig, sendEmail, verifyEmailTransport } from "../lib/mailer.js";
 import { prisma } from "../lib/prisma.js";
 
@@ -53,10 +54,7 @@ const worker = new Worker<EmailJobData>(
     return { providerId };
   },
   {
-    connection: {
-      host: process.env.REDIS_HOST || "localhost",
-      port: Number(process.env.REDIS_PORT) || 6379,
-    },
+    connection: getRedisConnectionOptions(),
     concurrency: 5,
   },
 );

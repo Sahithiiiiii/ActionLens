@@ -1,6 +1,7 @@
 
 import "dotenv/config";
 import { Worker } from "bullmq";
+import { getRedisConnectionOptions } from "../config/redis-connection.js";
 import type { Job } from "bullmq";
 import type { DocumentJobData } from "../queues/queue.types.js";
 import { PDFParse } from "pdf-parse";
@@ -258,10 +259,7 @@ const worker = new Worker<DocumentJobData>(
   },
 
   {
-    connection: {
-      host: process.env.REDIS_HOST || "localhost",
-      port: Number(process.env.REDIS_PORT) || 6379,
-    },
+    connection: getRedisConnectionOptions(),
   }
 );
 
