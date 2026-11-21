@@ -17,6 +17,7 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis_data:/data
     healthcheck:
@@ -51,8 +52,6 @@ services:
       DATABASE_URL: postgresql://actionlens:actionlens@postgres:5432/actionlens
       REDIS_HOST: redis
       REDIS_PORT: "6379"
-      CORS_ORIGIN: http://localhost:5174
-      APP_URL: http://localhost:5174
       UPLOAD_DIR: /app/uploads
     depends_on:
       migrate:

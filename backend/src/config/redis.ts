@@ -1,9 +1,12 @@
 
 import Redis from "ioredis";
+const redisUrl = process.env.REDIS_URL;
 
-const redis = new Redis({
-  host: process.env.REDIS_HOST || "localhost",
-  port: Number(process.env.REDIS_PORT) || 6379,
+if (!redisUrl) {
+  throw new Error("REDIS_URL is not configured");
+}
+
+const redis = new Redis(redisUrl, {
   maxRetriesPerRequest: null,
 });
 
